@@ -1,0 +1,4 @@
+load STM32H743ZITx 
+project name STCubeGenerated 
+project toolchain "Makefile" 
+project path "E:\SVN\Project\USBL_ADC\RTE\Device\STM32H743ZITx\" 
