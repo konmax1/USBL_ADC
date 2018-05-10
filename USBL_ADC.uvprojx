@@ -502,7 +502,7 @@
             </File>
             <File>
               <FileName>Thread.h</FileName>
-              <FileType>5</FileType>
+              <FileType>8</FileType>
               <FilePath>.\header\Thread.h</FilePath>
             </File>
           </Files>

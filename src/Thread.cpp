@@ -164,10 +164,15 @@ void ThreadADC (void *argument) {
 	}
 }
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	MessageStat msg = mOK;
 	osMessageQueuePut(uartRec,&msg,NULL,0);
 }
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
+
+}
+
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart){
 	MessageStat msg = mERR;
 	osMessageQueuePut(uartRec,&msg,NULL,0);
