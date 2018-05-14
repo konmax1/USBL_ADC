@@ -1,9 +1,12 @@
 #pragma once
+
 #include "cmsis_os2.h"                                        // CMSIS RTOS header file
 #include "stm32h7xx_hal.h"
 #include "string.h"
 #include "stm32h7xx.h"                  // Device header
 #include "main.h"
+#include "Multififo.h"
+
 
 #define FADC_WRITE_EN (uint32_t)(1<<31)
 #define FADC_READ_EN (uint32_t)(1<<30)
@@ -94,6 +97,8 @@ extern MDMA_HandleTypeDef hmdma_quadspi_fifo_th;
 extern UART_HandleTypeDef huart4;
 
 
+extern MultiFifo adcfifo;
+extern MultiFifo sendfifo;
 
 
 

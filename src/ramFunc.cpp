@@ -44,12 +44,12 @@ extern "C" void DMA2_Stream2_IRQHandler(void)
 		if(ipos >= SMPL_CNT){
 			ipos = 0;
 			sendfifo.putBuf(addrADCsmpl);
-			addrADCsmpl = adcfifo.getBuf();
+			addrADCsmpl = adcfifo.getBuf(0);
 			if(addrADCsmpl != 0)	{
 				p_addrADCsmpl = (adcBuffer*)addrADCsmpl;			
 				}
 			else{
-				printf("Not Buf ADC");
+				//printf("Not Buf ADC");
 			}	
 		}
 	}

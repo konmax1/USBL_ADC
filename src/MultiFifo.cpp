@@ -1,7 +1,5 @@
 #include "MultiFifo.h"
-
-MultiFifo adcfifo(1440,5);
-MultiFifo sendfifo(1440,5);
+#include "string.h"
 
 
 
@@ -28,16 +26,22 @@ void MultiFifo::init(int32_t internal){
 	reloadParam(internal);
 }
 
-MultiFifo::MultiFifo(){
+MultiFifo::MultiFifo(char* _name){
+	
+	memset(&attr, 0, sizeof(attr));
+	attr.name = _name;
+	
 	bufnumber = 10;
 	bufsize = 1000;
 }
 
-MultiFifo::~MultiFifo(){
-	
+MultiFifo::~MultiFifo(){	
+	delete[] attr.name;
 }
 
-MultiFifo::MultiFifo(int32_t _bufsize, int32_t _bufnumber){
+MultiFifo::MultiFifo(int32_t _bufsize, int32_t _bufnumber,	char* _name){
+	memset(&attr, 0, sizeof(attr));
+	attr.name = _name;
 	bufnumber = _bufnumber;
 	bufsize = _bufsize;
 }
@@ -47,7 +51,7 @@ int32_t MultiFifo::reloadParam(int32_t internal){
 	//----queue
 	if(adc_buf)
 		osMessageQueueDelete(adc_buf);
-	adc_buf = osMessageQueueNew(bufnumber, sizeof(uint8_t*), NULL);
+	adc_buf = osMessageQueueNew(bufnumber, sizeof(uint8_t*), &attr);
 	if (adc_buf == NULL) {
     return 1;
   }
@@ -66,7 +70,7 @@ int32_t MultiFifo::reloadParam(int32_t internal){
 }
 
 void MultiFifo::fillFifo(){
-		for(volatile int i = 0 ; i < bufnumber ; i++){
+		for(volatile int i = 0 ; i < (bufnumber - 1); i++){
 			putBuf();
 		}
 }
@@ -95,7 +99,7 @@ void MultiFifo::putBuf(){
 }
 
 void MultiFifo::freeBlock(uint32_t addr){
-	osMemoryPoolFree(adc_buf,(void*)addr);
+	osMemoryPoolFree(memory,(void*)addr);
 }
 
 

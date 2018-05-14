@@ -18,6 +18,8 @@ osSemaphoreId_t adcQspiSem_id;
 void ThreadADC (void *argument);
 void ThreadUart (void *argument);
 	
+MultiFifo adcfifo(1440,5, "ADCfifo");
+MultiFifo sendfifo(1440,5, "SENDfifo");
 	
 void initDMA_adc()
 {	
@@ -41,7 +43,8 @@ void fmc_writeCNFG(uint32_t reg){
 
 void HAL_QSPI_TxCpltCallback(QSPI_HandleTypeDef *hqspi){
 	//if(hqspi->Instance
-	adcfifo.freeBlock(MDMA_Channel0->CSAR);	
+	adcfifo.freeBlock(MDMA_Channel0->CSAR - 1440);	
+	adcfifo.fillFifo();
 	osSemaphoreRelease(adcQspiSem_id);
 }
 
@@ -136,11 +139,11 @@ void ThreadADC (void *argument) {
 	HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 0, 0);
 	TIM2->CCER|=TIM_CCER_CC3E;
 	//---init QSPI DMA
-	MDMA_Channel0->CBNDTR = 1440;
+	/*MDMA_Channel0->CBNDTR = 1440;
 	__HAL_MDMA_CLEAR_FLAG(&hmdma_quadspi_fifo_th, MDMA_FLAG_TE | MDMA_FLAG_CTC | MDMA_CISR_BRTIF | MDMA_CISR_BTIF | MDMA_CISR_TCIF);  
 	MDMA_Channel0->CDAR = (uint32_t)&QUADSPI->DR; 
 	MDMA_Channel0->CSAR = (uint32_t) 0x80000000;	
-	HAL_QSPI_Transmit_DMA(&hqspi,(uint8_t*)0x80000000);
+	HAL_QSPI_Transmit_DMA(&hqspi,(uint8_t*)0x80000000);*/
 	//-----------------
 	
 	adcfifo.init();
@@ -154,11 +157,12 @@ void ThreadADC (void *argument) {
 	while(1){
 		addrSrc = sendfifo.getBuf();
 		if(addrSrc){				
-			osSemaphoreAcquire(adcQspiSem_id, osWaitForever);
-			MDMA_Channel0->CBNDTR = 1440;
+			osSemaphoreAcquire(adcQspiSem_id, osWaitForever);			
+			HAL_QSPI_Transmit_DMA(&hqspi,(uint8_t*)addrSrc);
+			/*MDMA_Channel0->CBNDTR = 1440;
 			__HAL_MDMA_CLEAR_FLAG(&hmdma_quadspi_fifo_th, MDMA_FLAG_TE | MDMA_FLAG_CTC | MDMA_CISR_BRTIF | MDMA_CISR_BTIF | MDMA_CISR_TCIF);
 			MDMA_Channel0->CSAR = addrSrc;				
-			MDMA_Channel0->CCR |= MDMA_CCR_EN;
+			MDMA_Channel0->CCR |= MDMA_CCR_EN;*/
 		}
 			
 	}
@@ -218,6 +222,7 @@ MessageStat recData(uint8_t * buf,uint32_t len){
 	osStatus_t stat;
 	MessageStat msg;
 	uint8_t tick = 0;
+	SCB_InvalidateDCache_by_Addr((uint32_t*)buf,len);
 	HAL_UART_Receive_DMA(&huart4,buf,len);
 	while(1){
 		stat = osMessageQueueGet(uartRec,&msg,NULL,100);
@@ -234,8 +239,10 @@ MessageStat recData(uint8_t * buf,uint32_t len){
 				if(DMA1_Stream0->NDTR != (len - 1) ){
 					len++;
 				}
-			}else
-			return mTimeout;
+			}
+			else{
+				//return mTimeout;
+			}
 		}
 	}
 }
