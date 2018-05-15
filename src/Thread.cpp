@@ -148,7 +148,7 @@ void ThreadADC (void *argument) {
 	
 	adcfifo.init();
 	adcfifo.fillFifo();
-	sendfifo.init();
+	sendfifo.init(0);
 	
 	addrADCsmpl = adcfifo.getBuf();
 	p_addrADCsmpl = (adcBuffer*)addrADCsmpl;
