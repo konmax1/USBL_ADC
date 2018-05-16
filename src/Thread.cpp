@@ -20,10 +20,10 @@ void ThreadUart (void *argument);
 	
 MultiFifo adcfifo(1440,5, "ADCfifo");
 MultiFifo sendfifo(1440,5, "SENDfifo");
-	
+
 void initDMA_adc()
 {	
-	DMA2_Stream2->PAR = NAND_DEVICE;
+	DMA2_Stream2->PAR = NAND_DEVICE;	
 	DMA2_Stream2->M0AR = 0;
 	DMA2_Stream2->CR |=DMA_SxCR_TCIE | DMA_SxCR_TEIE;
 }
@@ -154,10 +154,12 @@ void ThreadADC (void *argument) {
 	p_addrADCsmpl = (adcBuffer*)addrADCsmpl;
 	uint32_t addrSrc;
 	adcQspiSem_id = osSemaphoreNew(1, 1, NULL);
+	netBuf *netb;
 	while(1){
 		addrSrc = sendfifo.getBuf();
 		if(addrSrc){				
-			osSemaphoreAcquire(adcQspiSem_id, osWaitForever);			
+			osSemaphoreAcquire(adcQspiSem_id, osWaitForever);	
+			netb = (netBuf*) addrSrc;
 			HAL_QSPI_Transmit_DMA(&hqspi,(uint8_t*)addrSrc);
 			/*MDMA_Channel0->CBNDTR = 1440;
 			__HAL_MDMA_CLEAR_FLAG(&hmdma_quadspi_fifo_th, MDMA_FLAG_TE | MDMA_FLAG_CTC | MDMA_CISR_BRTIF | MDMA_CISR_BTIF | MDMA_CISR_TCIF);
@@ -235,9 +237,9 @@ MessageStat recData(uint8_t * buf,uint32_t len){
 			}
 		}else
 		if(stat == osErrorTimeout){
-			if(len < 1){
-				if(DMA1_Stream0->NDTR != (len - 1) ){
-					len++;
+			if(tick < 1){
+				if(DMA1_Stream0->NDTR != (len ) ){
+					tick++;
 				}
 			}
 			else{

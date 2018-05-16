@@ -239,7 +239,7 @@ static void MX_QUADSPI_Init(void)
 
   /* QUADSPI parameter configuration*/
   hqspi.Instance = QUADSPI;
-  hqspi.Init.ClockPrescaler = 9;
+  hqspi.Init.ClockPrescaler = 49;
   hqspi.Init.FifoThreshold = 16;
   hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_NONE;
   hqspi.Init.FlashSize = 20;

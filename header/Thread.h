@@ -83,6 +83,16 @@ struct OuterData{
 	uint8_t pspMas[511];
 };
 
+struct netBuf{
+	typeCMD type;
+	uint16_t counter;	
+	uint16_t data0;
+	uint16_t data1;
+	uint16_t data2;
+	uint16_t data3;
+	int16_t mas[SMPL_CNT][8];
+};
+
 
 extern osThreadId_t tid_Thread;                                      // thread id
 
