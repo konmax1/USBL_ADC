@@ -41,41 +41,59 @@ void fmc_writeCNFG(uint32_t reg){
 	fmc_write16b(*p1);
 }
 
-void HAL_QSPI_TxCpltCallback(QSPI_HandleTypeDef *hqspi){
-	//if(hqspi->Instance
-	adcfifo.freeBlock(MDMA_Channel0->CSAR - 1440);	
-	adcfifo.fillFifo();
-	osSemaphoreRelease(adcQspiSem_id);
+//void HAL_QSPI_TxCpltCallback(QSPI_HandleTypeDef *hqspi){
+//	//if(hqspi->Instance
+//	adcfifo.freeBlock(MDMA_Channel0->CSAR - 1440);	
+//	adcfifo.fillFifo();
+//	osSemaphoreRelease(adcQspiSem_id);
+//}
+
+void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi){
+		adcfifo.freeBlock(DMA1_Stream3->M0AR/* - 1440*/);	
+		adcfifo.fillFifo();
+		osSemaphoreRelease(adcQspiSem_id);
+}
+
+void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi){
+}
+
+void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi){
+}
+
+void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi){
+}
+
+void HAL_SPI_AbortCpltCallback(SPI_HandleTypeDef *hspi){
 }
 
 
-void initQSPIcomm(){
-	 QSPI_CommandTypeDef s_command;
-	
-  s_command.Instruction       = 4;
-  s_command.Address           = 0;
-	s_command.AlternateBytes		= 2;	
-  s_command.AddressSize       = QSPI_ADDRESS_8_BITS;
-	s_command.AddressSize				= QSPI_ALTERNATE_BYTES_8_BITS;	
-  s_command.DummyCycles       = 0;
-	s_command.InstructionMode   = QSPI_INSTRUCTION_NONE;
-	s_command.AddressMode       = QSPI_ADDRESS_NONE;
-  s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
-  s_command.DataMode          = QSPI_DATA_4_LINES;
-  s_command.NbData            = 1440;
-	s_command.DdrMode						= QSPI_DDR_MODE_DISABLE;
-	s_command.DdrHoldHalfCycle	= QSPI_DDR_HHC_ANALOG_DELAY;
-  s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
-  
-  /* Configure the command */
-  HAL_QSPI_Command(&hqspi, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
-}
+//void initQSPIcomm(){
+//	 QSPI_CommandTypeDef s_command;
+//	
+//  s_command.Instruction       = 4;
+//  s_command.Address           = 0;
+//	s_command.AlternateBytes		= 2;	
+//  s_command.AddressSize       = QSPI_ADDRESS_8_BITS;
+//	s_command.AddressSize				= QSPI_ALTERNATE_BYTES_8_BITS;	
+//  s_command.DummyCycles       = 0;
+//	s_command.InstructionMode   = QSPI_INSTRUCTION_NONE;
+//	s_command.AddressMode       = QSPI_ADDRESS_NONE;
+//  s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+//  s_command.DataMode          = QSPI_DATA_4_LINES;
+//  s_command.NbData            = 1440;
+//	s_command.DdrMode						= QSPI_DDR_MODE_DISABLE;
+//	s_command.DdrHoldHalfCycle	= QSPI_DDR_HHC_ANALOG_DELAY;
+//  s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
+//  
+//  /* Configure the command */
+//  HAL_QSPI_Command(&hqspi, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
+//}
 
-__inline__ void sendQSPI(uint32_t mess){	
+/*__inline__ void sendQSPI(uint32_t mess){	
 	while( (QUADSPI->SR & QUADSPI_SR_FLEVEL_Msk) > QUADSPI_SR_FLEVEL_4){		
 	}
 	QUADSPI->DR = mess;
-}
+}*/
 
 extern "C" void Thread (void *argument) {		
 	printf("Started");	
@@ -83,7 +101,7 @@ extern "C" void Thread (void *argument) {
 	memset(&worker_attr, 0, sizeof(worker_attr));
   worker_attr.stack_size = 1000; 
 	tid_Thread = osThreadNew (ThreadADC, NULL, &worker_attr);	
-  worker_attr.stack_size = 3000; 
+  worker_attr.stack_size = 4000; 
 	uart_Task_id = osThreadNew (ThreadUart, NULL, &worker_attr);
 	volatile float freqP = 2 * HAL_RCC_GetPCLK1Freq();
 	volatile uint32_t debug = 0;
@@ -103,9 +121,9 @@ extern "C" void Thread (void *argument) {
 			case 3:
 			//HAL_QSPI_Transmit_DMA(&hqspi,&masA[0]);
 			
-			MDMA_Channel0->CBNDTR |=0x10;
-			__HAL_MDMA_CLEAR_FLAG(&hmdma_quadspi_fifo_th, MDMA_FLAG_TE | MDMA_FLAG_CTC | MDMA_CISR_BRTIF | MDMA_CISR_BTIF | MDMA_CISR_TCIF); 
-			MDMA_Channel0->CCR |= MDMA_CCR_EN;
+//			MDMA_Channel0->CBNDTR |=0x10;
+//			__HAL_MDMA_CLEAR_FLAG(&hmdma_quadspi_fifo_th, MDMA_FLAG_TE | MDMA_FLAG_CTC | MDMA_CISR_BRTIF | MDMA_CISR_BTIF | MDMA_CISR_TCIF); 
+//			MDMA_Channel0->CCR |= MDMA_CCR_EN;
 			/*sendQSPI(0x12345678);
 			sendQSPI(0x87654321);
 			sendQSPI(0x14725836);
@@ -125,7 +143,7 @@ extern uint32_t addrADCsmpl;
 
 void ThreadADC (void *argument) {
 	uint32_t cnfgReg = 0;	
-	initQSPIcomm();
+//	initQSPIcomm();
 	initDMA_adc();
 	CLEAR_BIT(GPIOD->ODR,GPIO_PIN_3);	
 	osDelay(1);
@@ -149,18 +167,31 @@ void ThreadADC (void *argument) {
 	adcfifo.init();
 	adcfifo.fillFifo();
 	sendfifo.init(0);
-	
+
 	addrADCsmpl = adcfifo.getBuf();
 	p_addrADCsmpl = (adcBuffer*)addrADCsmpl;
 	uint32_t addrSrc;
 	adcQspiSem_id = osSemaphoreNew(1, 1, NULL);
-	netBuf *netb;
+	volatile netBuf *netb;
+	adcBuffer *plocal;
 	while(1){
 		addrSrc = sendfifo.getBuf();
 		if(addrSrc){				
 			osSemaphoreAcquire(adcQspiSem_id, osWaitForever);	
+			//plocal = (adcBuffer*) addrSrc;
+			SCB_InvalidateDCache_by_Addr((uint32_t*)addrSrc,1440);
+			/*plocal->mas[0][0] = 0x1111;
+			plocal->mas[0][1] = 0x2222;
+			plocal->mas[0][2] = 0x3333;
+			plocal->mas[0][3] = 0x4444;
+			plocal->mas[0][4] = 0x5555;
+			plocal->mas[0][5] = 0x6666;
+			plocal->mas[0][6] = 0x7777;
+			plocal->mas[0][7] = 0x8888;*/
+			SCB_InvalidateDCache_by_Addr((uint32_t*)addrSrc,1440);
 			netb = (netBuf*) addrSrc;
-			HAL_QSPI_Transmit_DMA(&hqspi,(uint8_t*)addrSrc);
+			HAL_SPI_Transmit_DMA(&hspi1,(uint8_t*)addrSrc,1440/4);
+			//HAL_QSPI_Transmit_DMA(&hqspi,(uint8_t*)addrSrc);
 			/*MDMA_Channel0->CBNDTR = 1440;
 			__HAL_MDMA_CLEAR_FLAG(&hmdma_quadspi_fifo_th, MDMA_FLAG_TE | MDMA_FLAG_CTC | MDMA_CISR_BRTIF | MDMA_CISR_BTIF | MDMA_CISR_TCIF);
 			MDMA_Channel0->CSAR = addrSrc;				
@@ -251,14 +282,15 @@ MessageStat recData(uint8_t * buf,uint32_t len){
 
 
 MessageStat recDataPkt(uint8_t * buf){	
+	uint8_t * pb = buf;
 	osStatus_t stat;
 	MessageStat msg;
 	netHeader *h;
 	uint32_t lendata = 0;
 	//Receive Header
-	msg = recData(buf,HEADER_SIZE);
+	msg = recData(pb,HEADER_SIZE);
 	if(msg == mOK){
-		h = (netHeader*) buf;
+		h = (netHeader*) pb;
 	}else{
 		return mERR;
 	}
@@ -285,9 +317,9 @@ MessageStat recDataPkt(uint8_t * buf){
 			break;
 	}
 	if(lendata >0){
-		msg = recData(buf+HEADER_SIZE,lendata);
+		msg = recData(pb+HEADER_SIZE,lendata);
 		if(msg == mOK){
-			parcePkt(buf,buf+HEADER_SIZE,lendata);
+			parcePkt(pb,pb+HEADER_SIZE,lendata);
 			return mOK;
 		}
 		else{
@@ -295,7 +327,7 @@ MessageStat recDataPkt(uint8_t * buf){
 		}
 	}
 	else{
-		parcePkt(buf,buf,lendata);
+		parcePkt(pb,pb,lendata);
 		return mOK;
 	}
 	//Receive Data

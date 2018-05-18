@@ -49,19 +49,6 @@
 
 /* Private define ------------------------------------------------------------*/
 
-#define IN_K_Pin GPIO_PIN_2
-#define IN_K_GPIO_Port GPIOC
-#define EN_K_Pin GPIO_PIN_3
-#define EN_K_GPIO_Port GPIOC
-#define LD3_RED_Pin GPIO_PIN_14
-#define LD3_RED_GPIO_Port GPIOB
-#define STBY_Pin GPIO_PIN_15
-#define STBY_GPIO_Port GPIOA
-#define RESET_Pin GPIO_PIN_3
-#define RESET_GPIO_Port GPIOD
-#define LD2_BLUE_Pin GPIO_PIN_7
-#define LD2_BLUE_GPIO_Port GPIOB
-
 /* ########################## Assert Selection ############################## */
 /**
   * @brief Uncomment the line below to expanse the "assert_param" macro in the 

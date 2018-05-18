@@ -591,12 +591,6 @@
           <targetInfo name="Target 1"/>
         </targetInfos>
       </component>
-      <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="MDMA" Cvendor="Keil" Cversion="1.2.0" condition="STM32H7 HAL">
-        <package name="STM32H7xx_DFP" schemaVersion="1.4" url="http://www.keil.com/pack" vendor="Keil" version="2.1.0"/>
-        <targetInfos>
-          <targetInfo name="Target 1"/>
-        </targetInfos>
-      </component>
       <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="NAND" Cvendor="Keil" Cversion="1.2.0" condition="STM32H7 HAL">
         <package name="STM32H7xx_DFP" schemaVersion="1.4" url="http://www.keil.com/pack" vendor="Keil" version="2.1.0"/>
         <targetInfos>
@@ -609,13 +603,13 @@
           <targetInfo name="Target 1"/>
         </targetInfos>
       </component>
-      <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="QSPI" Cvendor="Keil" Cversion="1.2.0" condition="STM32H7 HAL MDMA">
+      <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RCC" Cvendor="Keil" Cversion="1.2.0" condition="STM32H7 HAL GPIO">
         <package name="STM32H7xx_DFP" schemaVersion="1.4" url="http://www.keil.com/pack" vendor="Keil" version="2.1.0"/>
         <targetInfos>
           <targetInfo name="Target 1"/>
         </targetInfos>
       </component>
-      <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RCC" Cvendor="Keil" Cversion="1.2.0" condition="STM32H7 HAL GPIO">
+      <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SPI" Cvendor="Keil" Cversion="1.2.0" condition="STM32H7 HAL DMA">
         <package name="STM32H7xx_DFP" schemaVersion="1.4" url="http://www.keil.com/pack" vendor="Keil" version="2.1.0"/>
         <targetInfos>
           <targetInfo name="Target 1"/>

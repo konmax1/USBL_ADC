@@ -16,11 +16,9 @@
 ".\objects\stm32h7xx_hal_dma.o"
 ".\objects\stm32h7xx_hal_dma_ex.o"
 ".\objects\stm32h7xx_hal_gpio.o"
-".\objects\stm32h7xx_hal_mdma.o"
 ".\objects\stm32h7xx_hal_nand.o"
 ".\objects\stm32h7xx_hal_pwr.o"
 ".\objects\stm32h7xx_hal_pwr_ex.o"
-".\objects\stm32h7xx_hal_qspi.o"
 ".\objects\stm32h7xx_hal_rcc.o"
 ".\objects\stm32h7xx_hal_rcc_ex.o"
 ".\objects\stm32h7xx_hal_tim.o"
@@ -31,6 +29,8 @@
 ".\objects\stm32h7xx_hal_msp.o"
 ".\objects\startup_stm32h743xx.o"
 ".\objects\system_stm32h7xx.o"
+".\objects\stm32h7xx_hal_spi.o"
+".\objects\stm32h7xx_hal_spi_ex.o"
 --strict --scatter ".\Objects\USBL_ADC.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

@@ -22,11 +22,36 @@ Dialog DLL:      TCM.DLL V1.35.1.0
  
 <h2>Project:</h2>
 E:\SVN\Project\USBL_ADC\USBL_ADC.uvprojx
-Project File Date:  05/16/2018
+Project File Date:  05/18/2018
 
 <h2>Output:</h2>
 *** Using Compiler 'V6.9', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
 Build target 'Target 1'
+compiling stm32h7xx_it.c...
+header/Thread.h(1): warning: #pragma once in main file [-Wpragma-once-outside-header]
+#pragma once
+        ^
+header/Thread.h(8): warning: In file included from...
+./header/Multififo.h(21): warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+                MultiFifo(int32_t _bufsize, int32_t _bufnumber,char* _name = "Queue");
+                                                                             ^
+2 warnings generated.
+compiling Thread.h...
+compiling stm32h7xx_hal_timebase_TIM.c...
+src/ramFunc.cpp(1): warning: In file included from...
+./header\Thread.h(8): warning: In file included from...
+./header/Multififo.h(21): warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+                MultiFifo(int32_t _bufsize, int32_t _bufnumber,char* _name = "Queue");
+                                                                             ^
+1 warning generated.
+compiling ramFunc.cpp...
+RTE/Device/STM32H743ZITx/STCubeGenerated/Src/main.c(117): warning: implicitly declaring library function 'memset' with type 'void *(void *, int, unsigned int)' [-Wimplicit-function-declaration]
+        memset(&worker_attr, 0, sizeof(worker_attr));
+        ^
+RTE/Device/STM32H743ZITx/STCubeGenerated/Src/main.c(117): note: include the header <string.h> or explicitly provide a declaration for 'memset'
+1 warning generated.
+compiling main.c...
+compiling stm32h7xx_hal.c...
 src/Thread.cpp(2): warning: In file included from...
 ./header\Thread.h(8): warning: In file included from...
 ./header/Multififo.h(21): warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
@@ -40,9 +65,26 @@ MultiFifo sendfifo(1440,5, "SENDfifo");
                            ^
 3 warnings generated.
 compiling Thread.cpp...
+compiling stm32h7xx_hal_cortex.c...
+compiling stm32h7xx_hal_dma_ex.c...
+compiling stm32h7xx_hal_gpio.c...
+compiling stm32h7xx_hal_pwr.c...
+compiling stm32h7xx_hal_dma.c...
+compiling stm32h7xx_hal_nand.c...
+compiling stm32h7xx_hal_pwr_ex.c...
+compiling stm32h7xx_hal_rcc.c...
+compiling stm32h7xx_hal_tim_ex.c...
+compiling stm32h7xx_hal_rcc_ex.c...
+compiling stm32h7xx_hal_uart_ex.c...
+compiling stm32h7xx_hal_msp.c...
+compiling stm32h7xx_ll_fmc.c...
+compiling stm32h7xx_hal_tim.c...
+compiling stm32h7xx_hal_uart.c...
+compiling stm32h7xx_hal_spi_ex.c...
+compiling stm32h7xx_hal_spi.c...
 linking...
-Program Size: Code=43404 RO-data=1712 RW-data=196 ZI-data=44236  
-".\Objects\USBL_ADC.axf" - 0 Error(s), 3 Warning(s).
+Program Size: Code=41788 RO-data=1712 RW-data=196 ZI-data=44420  
+".\Objects\USBL_ADC.axf" - 0 Error(s), 7 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -76,11 +118,10 @@ Package Vendor: Keil
    * Component: Cortex Version: 1.2.0
    * Component: DMA Version: 1.2.0
    * Component: GPIO Version: 1.2.0
-   * Component: MDMA Version: 1.2.0
    * Component: NAND Version: 1.2.0
    * Component: PWR Version: 1.2.0
-   * Component: QSPI Version: 1.2.0
    * Component: RCC Version: 1.2.0
+   * Component: SPI Version: 1.2.0
    * Component: TIM Version: 1.2.0
    * Component: UART Version: 1.2.0
    * Component: Startup Version: 1.2.0
@@ -130,9 +171,9 @@ Package Vendor: Keil
       Source file:   Source\retarget_io.c
 
    * Component: Keil::Device:STM32Cube Framework:STM32CubeMX:1.0.0
-      Include file:  STCubeGenerated\Inc\stm32h7xx_hal_conf.h
       Source file:   STCubeGenerated\Src\stm32h7xx_hal_msp.c
       Include file:  MX_Device.h
+      Include file:  STCubeGenerated\Inc\stm32h7xx_hal_conf.h
 
    * Component: Keil::Device:STM32Cube HAL:Common:1.1.0
       Include file:  Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h
@@ -148,9 +189,6 @@ Package Vendor: Keil
    * Component: Keil::Device:STM32Cube HAL:GPIO:1.2.0
       Source file:   Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_gpio.c
 
-   * Component: Keil::Device:STM32Cube HAL:MDMA:1.2.0
-      Source file:   Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_mdma.c
-
    * Component: Keil::Device:STM32Cube HAL:NAND:1.2.0
       Source file:   Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_nand.c
       Source file:   Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_ll_fmc.c
@@ -159,12 +197,13 @@ Package Vendor: Keil
       Source file:   Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_pwr.c
       Source file:   Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_pwr_ex.c
 
-   * Component: Keil::Device:STM32Cube HAL:QSPI:1.2.0
-      Source file:   Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_qspi.c
-
    * Component: Keil::Device:STM32Cube HAL:RCC:1.2.0
       Source file:   Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_rcc.c
       Source file:   Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_rcc_ex.c
+
+   * Component: Keil::Device:STM32Cube HAL:SPI:1.2.0
+      Source file:   Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_spi.c
+      Source file:   Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_spi_ex.c
 
    * Component: Keil::Device:STM32Cube HAL:TIM:1.2.0
       Source file:   Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_tim.c
@@ -178,7 +217,7 @@ Package Vendor: Keil
       Include file:  Drivers\CMSIS\Device\ST\STM32H7xx\Include\stm32h7xx.h
       Source file:   Drivers\CMSIS\Device\ST\STM32H7xx\Source\Templates\arm\startup_stm32h743xx.s
       Source file:   Drivers\CMSIS\Device\ST\STM32H7xx\Source\Templates\system_stm32h7xx.c
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>
