@@ -8,59 +8,109 @@ volatile uint32_t ipos = 0;
 volatile osStatus_t stat;	
 volatile uint16_t cnt = 0;
 
-adcBuffer *p_addrADCsmpl;
 uint32_t addrADCsmpl;
 
-__inline__ void sendQSPI(uint32_t mess){	
-	while( (QUADSPI->SR & QUADSPI_SR_FLEVEL_Msk) > QUADSPI_SR_FLEVEL_4){		
-	}
-	QUADSPI->DR = mess;
+
+
+uint32_t curbuf = 0;
+uint32_t  GetBUF(){
+	uint32_t addr = (uint32_t)&bufadc[curbuf][0];
+	curbuf =  (( curbuf + 1 ) % 10);
+	return addr;
 }
-
-
-
-void fmc_readADC(int16_t* adcval){
-	SCB_InvalidateDCache_by_Addr((uint32_t*)0x80000000,32);
-	for(volatile int i = 0; i < 8; i++){
-	adcval[i] = *((int16_t *)NAND_DEVICE+i);
-	}
-}
-
 
 extern "C" void EXTI9_5_IRQHandler(void)
 {
+	SET_BIT(GPIOG->ODR,GPIO_PIN_6);
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_7);
-	SCB_InvalidateDCache_by_Addr((uint32_t*)0x80000000,32);
-	DMA2_Stream2->M0AR = (uint32_t)&p_addrADCsmpl->mas[ipos][0];
-	DMA2_Stream2->NDTR=8;	
-	DMA2_Stream2->CR|=DMA_SxCR_EN;
+	if(addrADCsmpl == 0){		
+		CLEAR_BIT(GPIOG->ODR,GPIO_PIN_6);
+		return;
+	}
+	
+	/*DMA1_Stream0->M0AR = (uint32_t)&p_addrADCsmpl->mas[ipos][0];
+	DMA1_Stream0->NDTR=8;	
+	DMA1_Stream0->CR|=DMA_SxCR_EN;*/
+	
+	///MDMA start
+	if( ( MDMA_Channel0->CCR & MDMA_CCR_EN)  == 0){
+		stat = osOK;
+	}
+	MDMA_Channel0->CCR|= MDMA_CCR_SWRQ;
+	
+	CLEAR_BIT(GPIOG->ODR,GPIO_PIN_6);
 }
 
-extern "C" void DMA2_Stream2_IRQHandler(void)
+extern "C" void MDMA_IRQHandler(void){
+	SET_BIT(GPIOG->ODR,GPIO_PIN_6);
+	if(MDMA_Channel0->CISR & MDMA_CISR_CTCIF){
+		MDMA_Channel0->CIFCR|= MDMA_CIFCR_CCTCIF ;
+		SET_BIT(GPIOG->ODR,GPIO_PIN_5);
+		
+		DMA1->LIFCR |= DMA_LIFCR_CTCIF3 | DMA_LIFCR_CHTIF3 | DMA_LIFCR_CTEIF3;
+		SPI1->IFCR = 0xFFFFFFFF;
+		DMA1_Stream3->NDTR = 720;
+		DMA1_Stream3->M0AR = addrADCsmpl;
+		DMA1_Stream3->CR|=DMA_SxCR_EN;
+		SET_BIT(SPI1->CR1, SPI_CR1_CSTART);
+		
+		addrADCsmpl = GetBUF();			
+		MDMA_Channel0->CBNDTR |= (SMPL_CNT-1) << MDMA_CBNDTR_BRC_Pos | 16;	
+		MDMA_Channel0->CDAR = addrADCsmpl;
+		MDMA_Channel0->CCR|=MDMA_CCR_EN ;
+		CLEAR_BIT(GPIOG->ODR,GPIO_PIN_5);	
+	}
+	if(MDMA_Channel0->CISR & MDMA_CISR_TEIF){
+		MDMA_Channel0->CIFCR|= MDMA_CIFCR_CTEIF ;
+	}	
+	CLEAR_BIT(GPIOG->ODR,GPIO_PIN_6);
+}
+
+
+
+/*extern "C" void DMA1_Stream0_IRQHandler(void)
 {
-	GPIOC->ODR |= GPIO_PIN_11;
-	if(DMA2->LISR & DMA_LISR_TCIF2){
-		DMA2->LIFCR |= DMA_LIFCR_CTCIF2;
+	SET_BIT(GPIOG->ODR,GPIO_PIN_6);
+	if(DMA1->LISR & DMA_LISR_TCIF0){
+		DMA1->LIFCR |= DMA_LIFCR_CTCIF0 | DMA_LIFCR_CHTIF0;
 		ipos++;	
-		if(ipos >= SMPL_CNT){
-			ipos = 0;
-			sendfifo.putBuf(addrADCsmpl);
-			addrADCsmpl = adcfifo.getBuf(0);
-			if(addrADCsmpl != 0)	{
-				p_addrADCsmpl = (adcBuffer*)addrADCsmpl;			
-				}
-			else{
-				//printf("Not Buf ADC");
-			}	
+		if(ipos >= SMPL_CNT){			
+			SET_BIT(GPIOG->ODR,GPIO_PIN_5);
+			ipos = 0;	
+			//SCB_InvalidateDCache_by_Addr((uint32_t*)addrADCsmpl,1440);			
+			DMA1->LIFCR |= DMA_LIFCR_CTCIF3 | DMA_LIFCR_CHTIF3 | DMA_LIFCR_CTEIF3;
+			SPI1->IFCR = 0xFFFFFFFF;
+			DMA1_Stream3->NDTR = 720;
+			DMA1_Stream3->M0AR = addrADCsmpl;
+			DMA1_Stream3->CR|=DMA_SxCR_EN;
+			SET_BIT(SPI1->CR1, SPI_CR1_CSTART);
+			
+			//sendfifo.putBuf(addrADCsmpl);
+			addrADCsmpl = GetBUF();
+			//addrADCsmpl = adcfifo.getBuf(0);
+			if(addrADCsmpl != 0){
+				p_addrADCsmpl = (adcBuffer*)addrADCsmpl;
+			}			
+			CLEAR_BIT(GPIOG->ODR,GPIO_PIN_5);	
 		}
 	}
-	if(DMA2->LISR & DMA_LISR_TEIF2){
-		DMA2->LIFCR |= DMA_LIFCR_CTEIF2;
+	if(DMA1->LISR & DMA_LISR_TEIF0){
+		DMA1->LIFCR |= DMA_LIFCR_CTEIF0;
 	}	
-	GPIOC->ODR &= ~GPIO_PIN_11;
+	CLEAR_BIT(GPIOG->ODR,GPIO_PIN_6);
+}*/
+
+extern "C" void DMA1_Stream3_IRQHandler(void)
+{
+	if(DMA1->LISR & DMA_LISR_TCIF3){
+		DMA1->LIFCR |= DMA_LIFCR_CTCIF3 | DMA_LIFCR_CHTIF3;
+	}
+	if(DMA1->LISR & DMA_LISR_TEIF3){
+		DMA1->LIFCR |= DMA_LIFCR_CTEIF3;
+	}	
+  //HAL_DMA_IRQHandler(&hdma_spi1_tx);
+
 }
-
-
 
 
 

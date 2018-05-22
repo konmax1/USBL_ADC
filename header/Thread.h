@@ -67,6 +67,8 @@ enum typeCMD : uint16_t{
 	tUnknown			=	0xFFFF,
 };
 
+
+
 struct netHeader{
 	typeCMD type;
 	uint16_t counter;
@@ -93,6 +95,9 @@ struct netBuf{
 	int16_t mas[SMPL_CNT][8];
 };
 
+extern uint16_t bufadc[10][720];
+
+uint32_t  GetBUF();
 
 extern osThreadId_t tid_Thread;                                      // thread id
 
@@ -104,8 +109,6 @@ extern UART_HandleTypeDef huart4;
 
 extern SPI_HandleTypeDef hspi1;
 
-extern MultiFifo adcfifo;
-extern MultiFifo sendfifo;
-
+extern uint32_t addrADCsmpl;
 
 
