@@ -12,7 +12,6 @@ LR_IROM1 0x08000000 0x00200000  {    ; load region size_region
   RW_IRAM2 0x24000000 0x00080000  {  ; RW data
     ramFunc.o (+RO)
     Thread.o (+RO)
-    pwmOuter.o (+RO)
    .ANY (+RW +ZI)
   }
 }

@@ -5,8 +5,7 @@
 #include "string.h"
 #include "stm32h7xx.h"                  // Device header
 #include "main.h"
-#include "Multififo.h"
-
+#include "pwmouter.h"
 
 #define FADC_WRITE_EN (uint32_t)(1<<31)
 #define FADC_READ_EN (uint32_t)(1<<30)
@@ -41,6 +40,9 @@
 
 #define SMPL_CNT (90)
 #define HEADER_SIZE (12)
+#define PacketSizeBytes (SMPL_CNT * 16 + HEADER_SIZE)
+#define PacketSizeShort ( PacketSizeBytes / 2 )
+#define PacketSizeWord 	( PacketSizeBytes / 4 )
 
 struct adcBuffer{
 	int16_t mas[SMPL_CNT][8];
@@ -95,7 +97,8 @@ struct netBuf{
 	int16_t mas[SMPL_CNT][8];
 };
 
-extern uint16_t bufadc[10][720];
+#define NUMBER_CIRCLE_BUF (10)
+extern uint16_t bufadc[NUMBER_CIRCLE_BUF][PacketSizeShort];
 
 uint32_t  GetBUF();
 

@@ -3,7 +3,6 @@
 #include "string.h"
 #include "main.h"
 #include "arm_math.h"
-#include "MultiFifo.h"
 
 
 
@@ -15,7 +14,7 @@ osMessageQueueId_t uartRec;
 void ThreadADC (void *argument);
 void ThreadUart (void *argument);
 	
-uint16_t bufadc[10][720];
+uint16_t bufadc[NUMBER_CIRCLE_BUF][PacketSizeShort];
 
 
 void initDMA_adc()
@@ -25,7 +24,7 @@ void initDMA_adc()
 	DMA1_Stream0->CR |=DMA_SxCR_TCIE | DMA_SxCR_TEIE;
 	
 	MDMA_Channel0->CSAR = NAND_DEVICE;	
-	addrADCsmpl = GetBUF();
+	addrADCsmpl = GetBUF() + HEADER_SIZE;
 	MDMA_Channel0->CDAR = addrADCsmpl;
 	MDMA_Channel0->CCR |=MDMA_CCR_CTCIE | MDMA_CCR_TEIE;
 	MDMA_Channel0->CBNDTR |= (SMPL_CNT-1) << MDMA_CBNDTR_BRC_Pos | 16;	
@@ -52,7 +51,7 @@ extern "C" void Thread (void *argument) {
 	memset(&worker_attr, 0, sizeof(worker_attr));
 	
 	//Init SPI
-	SPI1->CR2 |= 720;
+	SPI1->CR2 |= PacketSizeShort;
 	SPI1->CR1 |= SPI_CR1_SPE;
 	DMA1_Stream3->PAR = (uint32_t)&SPI1->TXDR;		
 	SET_BIT(SPI1->CFG1, SPI_CFG1_TXDMAEN);
@@ -71,7 +70,7 @@ extern "C" void Thread (void *argument) {
 	TIM2->CCER|=TIM_CCER_CC3E;
 	
 	
-  worker_attr.stack_size = 10000; 
+  worker_attr.stack_size = 1000; 
 	uart_Task_id = osThreadNew (ThreadUart, NULL, &worker_attr);
 	
   while (1) {
@@ -94,7 +93,9 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart){
 }
 
 void parcePkt(uint8_t* header,uint8_t *data, uint32_t len){
-	netHeader * h = (netHeader*) header;		
+	netHeader * h = (netHeader*) header;	
+	OuterData * outdata		;
+	netBuf *netb;
 	uint32_t freq = 0;
 	float freqP = 2 * HAL_RCC_GetPCLK1Freq();
 	switch(h->type){
@@ -122,6 +123,16 @@ void parcePkt(uint8_t* header,uint8_t *data, uint32_t len){
 			SET_BIT(GPIOC->ODR,GPIO_PIN_3);
 			break;
 		case tSetOuter:
+			outdata = (OuterData*) data;	
+			SetFreqOuter(outdata->freqOuter,outdata->Nperiod,outdata->lenPSP);
+			setPSP(&outdata->pspMas[0]);
+			netb = (netBuf*)addrADCsmpl;
+			netb->counter=0;
+			netb->data0=(MDMA_Channel0->CDAR - addrADCsmpl)/16;
+			netb->type = tADCsmplOuter;
+			/*p_addrADCsmpl->type = tADCsmplOuter;
+			p_addrADCsmpl->data0 = ipos;	*/	
+			StartOuter();
 			break;
 	
 		default:
@@ -152,7 +163,8 @@ MessageStat recData(uint8_t * buf,uint32_t len){
 				}
 			}
 			else{
-				//return mTimeout;
+				HAL_UART_AbortReceive(&huart4);
+				return mTimeout;
 			}
 		}
 	}
@@ -189,6 +201,7 @@ MessageStat recDataPkt(uint8_t * buf){
 		case tOffADC:
 			break;
 		case tSetOuter:
+			lendata = 523;
 			break;
 	
 		default:
@@ -208,13 +221,10 @@ MessageStat recDataPkt(uint8_t * buf){
 		parcePkt(pb,pb,lendata);
 		return mOK;
 	}
-	//Receive Data
-	
-
 }
 
 void ThreadUart (void *argument) {
-	uint8_t rxbuf[1452];
+	static uint8_t rxbuf[1600];
 	MessageStat msg;
 	uartRec = osMessageQueueNew(2,sizeof(MessageStat),NULL);
 	while(1){
