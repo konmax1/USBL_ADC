@@ -125,7 +125,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGTARM</Key>
-          <Name>(1010=75,103,525,659,0)(6017=-1,-1,-1,-1,0)(1008=-1,-1,-1,-1,0)(6016=-1,-1,-1,-1,0)(1012=135,168,612,482,0)</Name>
+          <Name>(1010=75,103,525,659,0)(6017=-1,-1,-1,-1,0)(1008=-1,-1,-1,-1,0)(6016=-1,-1,-1,-1,0)(1012=916,143,1393,457,0)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -152,18 +152,18 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>0</LineNumber>
+          <LineNumber>76</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>246</Address>
+          <Address>134237168</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename></Filename>
+          <Filename>.\RTE\Device\STM32H743ZITx\STCubeGenerated\Src\stm32h7xx_it.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>0x000000F6</Expression>
+          <Expression>\\USBL_ADC\RTE/Device/STM32H743ZITx/STCubeGenerated/Src/stm32h7xx_it.c\76</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -190,44 +190,29 @@
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>h</ItemText>
+          <ItemText>(netBuf*)&amp;bufadc[curbuf][0]</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>outdata</ItemText>
+          <ItemText>htim1</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>netb</ItemText>
+          <ItemText>cntOuter,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>htim1</ItemText>
-        </Ww>
-        <Ww>
-          <count>8</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>SrcAddress,0x10</ItemText>
-        </Ww>
-        <Ww>
-          <count>9</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>DstAddress,0x10</ItemText>
-        </Ww>
-        <Ww>
-          <count>10</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>hdma_tim1_ch3</ItemText>
+          <ItemText>outBPSK</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
         <Mm>
           <WinNumber>1</WinNumber>
-          <SubType>0</SubType>
-          <ItemText>\\USBL_ADC\src/Thread.cpp\_Z9ThreadADCPv\netb</ItemText>
+          <SubType>10</SubType>
+          <ItemText>outBPSK</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>

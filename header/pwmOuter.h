@@ -15,7 +15,7 @@
 #define NpspMin (11)
 #define NpspMax (511)
 #define NsinMin (1)
-#define NsinMax (20)
+#define NsinMax (10)
 #define FsmplMin (30000)
 #define FsmplMax (50000)
 

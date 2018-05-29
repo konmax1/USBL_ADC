@@ -36,7 +36,7 @@
 #include "stm32h7xx_it.h"
 
 /* USER CODE BEGIN 0 */
-
+volatile int dbg = 0;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/

@@ -14,7 +14,8 @@ osMessageQueueId_t uartRec;
 void ThreadADC (void *argument);
 void ThreadUart (void *argument);
 	
-uint16_t bufadc[NUMBER_CIRCLE_BUF][PacketSizeShort];
+
+extern volatile uint16_t cnt;
 
 
 void initDMA_adc()
@@ -24,8 +25,8 @@ void initDMA_adc()
 	DMA1_Stream0->CR |=DMA_SxCR_TCIE | DMA_SxCR_TEIE;
 	
 	MDMA_Channel0->CSAR = NAND_DEVICE;	
-	addrADCsmpl = GetBUF() + HEADER_SIZE;
-	MDMA_Channel0->CDAR = addrADCsmpl;
+	addrADCsmpl = GetBUF();
+	MDMA_Channel0->CDAR = addrADCsmpl + HEADER_SIZE;
 	MDMA_Channel0->CCR |=MDMA_CCR_CTCIE | MDMA_CCR_TEIE;
 	MDMA_Channel0->CBNDTR |= (SMPL_CNT-1) << MDMA_CBNDTR_BRC_Pos | 16;	
 	MDMA_Channel0->CCR|=MDMA_CCR_EN ;
@@ -100,7 +101,10 @@ void parcePkt(uint8_t* header,uint8_t *data, uint32_t len){
 	float freqP = 2 * HAL_RCC_GetPCLK1Freq();
 	switch(h->type){
 		case tInitConn:
-		case tStartADC:			
+		case tStartADC:
+			netb = (netBuf*)addrADCsmpl;
+			netb->counter = 0;
+			cnt = 1;	
 			TIM2->CR1  |= TIM_CR1_CEN;
 			break;
 		case tStopADC:
@@ -127,9 +131,8 @@ void parcePkt(uint8_t* header,uint8_t *data, uint32_t len){
 			SetFreqOuter(outdata->freqOuter,outdata->Nperiod,outdata->lenPSP);
 			setPSP(&outdata->pspMas[0]);
 			netb = (netBuf*)addrADCsmpl;
-			netb->counter=0;
-			netb->data0=(MDMA_Channel0->CDAR - addrADCsmpl)/16;
 			netb->type = tADCsmplOuter;
+			netb->data0=(MDMA_Channel0->CDAR - addrADCsmpl)/16;
 			/*p_addrADCsmpl->type = tADCsmplOuter;
 			p_addrADCsmpl->data0 = ipos;	*/	
 			StartOuter();
@@ -149,12 +152,7 @@ MessageStat recData(uint8_t * buf,uint32_t len){
 	while(1){
 		stat = osMessageQueueGet(uartRec,&msg,NULL,100);
 		if(stat == osOK){
-			if(msg == mOK){
 				return msg;
-			}
-			if(msg == mERR){				
-				return msg;
-			}
 		}else
 		if(stat == osErrorTimeout){
 			if(tick < 1){
@@ -169,7 +167,6 @@ MessageStat recData(uint8_t * buf,uint32_t len){
 		}
 	}
 }
-
 
 MessageStat recDataPkt(uint8_t * buf){	
 	uint8_t * pb = buf;
@@ -223,8 +220,8 @@ MessageStat recDataPkt(uint8_t * buf){
 	}
 }
 
+static uint8_t rxbuf[1600];
 void ThreadUart (void *argument) {
-	static uint8_t rxbuf[1600];
 	MessageStat msg;
 	uartRec = osMessageQueueNew(2,sizeof(MessageStat),NULL);
 	while(1){

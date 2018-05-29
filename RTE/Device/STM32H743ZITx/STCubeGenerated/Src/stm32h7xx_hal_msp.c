@@ -235,7 +235,10 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef* htim_pwm)
     hdma_tim1_ch3.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
     hdma_tim1_ch3.Init.Mode = DMA_NORMAL;
     hdma_tim1_ch3.Init.Priority = DMA_PRIORITY_HIGH;
-    hdma_tim1_ch3.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    hdma_tim1_ch3.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
+    hdma_tim1_ch3.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_HALFFULL;
+    hdma_tim1_ch3.Init.MemBurst = DMA_MBURST_SINGLE;
+    hdma_tim1_ch3.Init.PeriphBurst = DMA_PBURST_SINGLE;
     if (HAL_DMA_Init(&hdma_tim1_ch3) != HAL_OK)
     {
       _Error_Handler(__FILE__, __LINE__);
@@ -244,13 +247,13 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef* htim_pwm)
     __HAL_LINKDMA(htim_pwm,hdma[TIM_DMA_ID_CC3],hdma_tim1_ch3);
 
     /* TIM1 interrupt Init */
-    HAL_NVIC_SetPriority(TIM1_BRK_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM1_BRK_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(TIM1_BRK_IRQn);
-    HAL_NVIC_SetPriority(TIM1_UP_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM1_UP_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(TIM1_UP_IRQn);
-    HAL_NVIC_SetPriority(TIM1_TRG_COM_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM1_TRG_COM_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(TIM1_TRG_COM_IRQn);
-    HAL_NVIC_SetPriority(TIM1_CC_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM1_CC_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(TIM1_CC_IRQn);
   /* USER CODE BEGIN TIM1_MspInit 1 */
 

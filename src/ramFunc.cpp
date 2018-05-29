@@ -3,19 +3,18 @@
 
 
 
+
+uint16_t bufadc[NUMBER_CIRCLE_BUF][PacketSizeShort] ;
+uint32_t addrADCsmpl;
 volatile uint32_t ipos = 0;
 volatile osStatus_t stat;	
 volatile uint16_t cnt = 0;
-
-uint32_t addrADCsmpl;
-
-
-
 uint32_t curbuf = 0;
 
 uint32_t  GetBUF(){
 	bufadc[curbuf][0] = tADCsmpl;
-	bufadc[curbuf][1] = 0;
+	bufadc[curbuf][1] = cnt;
+	cnt++;
 	uint32_t addr = (uint32_t)&bufadc[curbuf][0];
 	curbuf =  (( curbuf + 1 ) % NUMBER_CIRCLE_BUF);
 	return addr;
@@ -35,9 +34,10 @@ extern "C" void EXTI9_5_IRQHandler(void)
 	DMA1_Stream0->CR|=DMA_SxCR_EN;*/
 	
 	///MDMA start
-	if( ( MDMA_Channel0->CCR & MDMA_CCR_EN)  == 0){
+	SCB_InvalidateDCache_by_Addr((uint32_t*)0x80000000,16);
+	/*if( ( MDMA_Channel0->CCR & MDMA_CCR_EN)  == 0){
 		stat = osOK;
-	}
+	}*/
 	MDMA_Channel0->CCR|= MDMA_CCR_SWRQ;
 	
 	CLEAR_BIT(GPIOG->ODR,GPIO_PIN_6);
