@@ -99,7 +99,6 @@ struct netBuf{
 
 #define NUMBER_CIRCLE_BUF (10)
 extern uint16_t bufadc[NUMBER_CIRCLE_BUF][PacketSizeShort];
-
 uint32_t  GetBUF();
 
 extern osThreadId_t tid_Thread;                                      // thread id
@@ -112,6 +111,6 @@ extern UART_HandleTypeDef huart4;
 
 extern SPI_HandleTypeDef hspi1;
 
-extern uint32_t addrADCsmpl;
+extern volatile uint32_t addrADCsmpl;
 
 

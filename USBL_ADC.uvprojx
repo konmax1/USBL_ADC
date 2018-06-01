@@ -206,9 +206,9 @@
             <Ir1Chk>1</Ir1Chk>
             <Ir2Chk>0</Ir2Chk>
             <Ra1Chk>0</Ra1Chk>
-            <Ra2Chk>0</Ra2Chk>
+            <Ra2Chk>1</Ra2Chk>
             <Ra3Chk>0</Ra3Chk>
-            <Im1Chk>1</Im1Chk>
+            <Im1Chk>0</Im1Chk>
             <Im2Chk>0</Im2Chk>
             <OnChipMemories>
               <Ocm1>
@@ -283,13 +283,13 @@
               </OCR_RVCT5>
               <OCR_RVCT6>
                 <Type>0</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <StartAddress>0x30000000</StartAddress>
+                <Size>0x48000</Size>
               </OCR_RVCT6>
               <OCR_RVCT7>
                 <Type>0</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <StartAddress>0x24000000</StartAddress>
+                <Size>0x60000</Size>
               </OCR_RVCT7>
               <OCR_RVCT8>
                 <Type>0</Type>
@@ -298,13 +298,13 @@
               </OCR_RVCT8>
               <OCR_RVCT9>
                 <Type>0</Type>
-                <StartAddress>0x24000000</StartAddress>
-                <Size>0x40000</Size>
+                <StartAddress>0x20000000</StartAddress>
+                <Size>0x20000</Size>
               </OCR_RVCT9>
               <OCR_RVCT10>
                 <Type>0</Type>
-                <StartAddress>0x24040000</StartAddress>
-                <Size>0x40000</Size>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x10000</Size>
               </OCR_RVCT10>
             </OnChipMemories>
             <RvctStartVector></RvctStartVector>
@@ -469,9 +469,9 @@
               <FileOption>
                 <CommonProperty>
                   <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>5</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
+                  <RVCTCodeConst>10</RVCTCodeConst>
+                  <RVCTZI>4</RVCTZI>
+                  <RVCTOtherData>4</RVCTOtherData>
                   <ModuleSelection>0</ModuleSelection>
                   <IncludeInBuild>2</IncludeInBuild>
                   <AlwaysBuild>2</AlwaysBuild>
@@ -522,21 +522,11 @@
               <FileName>Thread.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\src\Thread.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>Thread.h</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\header\Thread.h</FilePath>
-            </File>
-            <File>
-              <FileName>pwmOuter.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\src\pwmOuter.cpp</FilePath>
               <FileOption>
                 <CommonProperty>
                   <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>5</RVCTZI>
+                  <RVCTCodeConst>10</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
                   <RVCTOtherData>0</RVCTOtherData>
                   <ModuleSelection>0</ModuleSelection>
                   <IncludeInBuild>2</IncludeInBuild>
@@ -585,9 +575,9 @@
               </FileOption>
             </File>
             <File>
-              <FileName>pwmOuter.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\header\pwmOuter.h</FilePath>
+              <FileName>Thread.h</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\header\Thread.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -613,7 +603,11 @@
       <api Capiversion="2.1.2" Cclass="CMSIS" Cgroup="RTOS2" exclusive="1">
         <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="5.3.0"/>
         <targetInfos>
-          <targetInfo name="Target 1"/>
+          <targetInfo name="Target 1">
+            <mem>
+              <RVCTCodeConst>10</RVCTCodeConst>
+            </mem>
+          </targetInfo>
         </targetInfos>
       </api>
       <api Capiversion="1.1.0" Cclass="Device" Cgroup="STM32Cube Framework" exclusive="1">
@@ -639,7 +633,11 @@
       <component Capiversion="2.1.2" Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Library" Cvendor="ARM" Cversion="5.3.0" condition="RTOS2 RTX5 Lib">
         <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="5.3.0"/>
         <targetInfos>
-          <targetInfo name="Target 1"/>
+          <targetInfo name="Target 1">
+            <mem>
+              <RVCTCodeConst>10</RVCTCodeConst>
+            </mem>
+          </targetInfo>
         </targetInfos>
       </component>
       <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common" Cvendor="Keil" Cversion="1.1.0" condition="STM32H7 HAL Common">

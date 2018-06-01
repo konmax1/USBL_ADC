@@ -8,8 +8,8 @@ volatile int32_t lenPSP = 1;
 int32_t currpos = 0;
 uint32_t* pmasOut;
 
-uint16_t outBPSK[Npoint * NsinMax * NpspMax] /*__attribute__((section(".ARM.__at_0x24000000")))*/;
-
+//uint16_t outBPSK[Npoint * NsinMax * NpspMax] __attribute__((section(".ARM.__at_0x30000000")));
+uint16_t outBPSK[Npoint * NsinMax * NpspMax] ;
 
 void setPSP(uint8_t *mas){
 	uint16_t* p = &outBPSK[0];

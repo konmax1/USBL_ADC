@@ -13,7 +13,6 @@ osMessageQueueId_t uartRec;
 
 void ThreadADC (void *argument);
 void ThreadUart (void *argument);
-	
 
 extern volatile uint16_t cnt;
 
@@ -102,12 +101,15 @@ void parcePkt(uint8_t* header,uint8_t *data, uint32_t len){
 	switch(h->type){
 		case tInitConn:
 		case tStartADC:
+			//red LED
+			SET_BIT(GPIOB->ODR,GPIO_PIN_14);
 			netb = (netBuf*)addrADCsmpl;
 			netb->counter = 0;
-			cnt = 1;	
+			cnt = 0;	
 			TIM2->CR1  |= TIM_CR1_CEN;
 			break;
 		case tStopADC:
+			CLEAR_BIT(GPIOB->ODR,GPIO_PIN_14);
 			TIM2->CR1  &= ~TIM_CR1_CEN;
 			break;
 		case tSetFreqADC:
@@ -127,15 +129,18 @@ void parcePkt(uint8_t* header,uint8_t *data, uint32_t len){
 			SET_BIT(GPIOC->ODR,GPIO_PIN_3);
 			break;
 		case tSetOuter:
-			outdata = (OuterData*) data;	
+			/*outdata = (OuterData*) data;	
 			SetFreqOuter(outdata->freqOuter,outdata->Nperiod,outdata->lenPSP);
-			setPSP(&outdata->pspMas[0]);
-			netb = (netBuf*)addrADCsmpl;
-			netb->type = tADCsmplOuter;
-			netb->data0=(MDMA_Channel0->CDAR - addrADCsmpl)/16;
+			setPSP(&outdata->pspMas[0]);*/
+			//netb = ((netBuf*)addrADCsmpl);		
+			//GPIOB->ODR^=GPIO_PIN_7;
+			((netBuf*)addrADCsmpl)->type = tADCsmplOuter;
+			((netBuf*)addrADCsmpl)->data0=(MDMA_Channel0->CDAR - addrADCsmpl)/16;
+			GPIOA->ODR ^= GPIO_PIN_0;
+			GPIOB->ODR ^= GPIO_PIN_7;
 			/*p_addrADCsmpl->type = tADCsmplOuter;
 			p_addrADCsmpl->data0 = ipos;	*/	
-			StartOuter();
+			//StartOuter();
 			break;
 	
 		default:
@@ -198,7 +203,7 @@ MessageStat recDataPkt(uint8_t * buf){
 		case tOffADC:
 			break;
 		case tSetOuter:
-			lendata = 523;
+			lendata = 0;
 			break;
 	
 		default:

@@ -9,11 +9,22 @@ LR_IROM1 0x08000000 0x00200000  {    ; load region size_region
    .ANY (+RO)
    .ANY (+XO)
   }
-  RW_IRAM1 0x24000000 0x00040000  {  ; RW data
+  RW_RAM2 0x24000000 0x00060000  {  ; RW data
    .ANY (+RW +ZI)
   }
-  RW_IRAM2 0x24040000 0x00040000  {
-    ramFunc.o (+ZI)
+  RW_RAM1 0x30000000 0x00048000  {
+    pwmOuter.o (+ZI +RW)
+  }
+  RW_IRAM1 0x20000000 0x00020000  {
+    ramFunc.o (+ZI +RW)
+  }
+  RW_IRAM2 0x00000000 0x00010000  {
+    ramFunc.o (+RO)
+    Thread.o (+RO)
+    pwmOuter.o (+RO)
+   *RTX_CM4F.lib (+RO)
+    rtx_lib.o (+RO)
+    RTX_Config.o (+RO)
   }
 }
 

@@ -4,19 +4,25 @@
 
 
 
-uint16_t bufadc[NUMBER_CIRCLE_BUF][PacketSizeShort] ;
-uint32_t addrADCsmpl;
+uint16_t bufadc[NUMBER_CIRCLE_BUF][PacketSizeShort] __attribute__((section(".ARM.__at_0x24060000")));
+//uint16_t bufadc[NUMBER_CIRCLE_BUF][PacketSizeShort] __attribute__((section("IRAM2_NC")));;
+//uint16_t bufadc[NUMBER_CIRCLE_BUF][PacketSizeShort] ;
+volatile uint32_t addrADCsmpl;
 volatile uint32_t ipos = 0;
 volatile osStatus_t stat;	
-volatile uint16_t cnt = 0;
-uint32_t curbuf = 0;
+volatile uint16_t cnt = -1;
+volatile uint32_t curbuf = -1;
 
 uint32_t  GetBUF(){
+	cnt++;
+	//curbuf =  (( curbuf + 1 ) % NUMBER_CIRCLE_BUF);
+	curbuf++;
+	if(curbuf>=NUMBER_CIRCLE_BUF){
+		curbuf=0;
+	}
 	bufadc[curbuf][0] = tADCsmpl;
 	bufadc[curbuf][1] = cnt;
-	cnt++;
 	uint32_t addr = (uint32_t)&bufadc[curbuf][0];
-	curbuf =  (( curbuf + 1 ) % NUMBER_CIRCLE_BUF);
 	return addr;
 }
 
@@ -34,7 +40,7 @@ extern "C" void EXTI9_5_IRQHandler(void)
 	DMA1_Stream0->CR|=DMA_SxCR_EN;*/
 	
 	///MDMA start
-	SCB_InvalidateDCache_by_Addr((uint32_t*)0x80000000,16);
+	//SCB_InvalidateDCache_by_Addr((uint32_t*)0x80000000,16);
 	/*if( ( MDMA_Channel0->CCR & MDMA_CCR_EN)  == 0){
 		stat = osOK;
 	}*/

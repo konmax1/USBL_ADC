@@ -49,6 +49,9 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define OutSignal_Pin GPIO_PIN_0
+#define OutSignal_GPIO_Port GPIOA
+
 /* ########################## Assert Selection ############################## */
 /**
   * @brief Uncomment the line below to expanse the "assert_param" macro in the 

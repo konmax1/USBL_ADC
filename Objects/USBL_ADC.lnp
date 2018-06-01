@@ -5,7 +5,6 @@
 ".\objects\ramfunc.o"
 ".\objects\thread.o"
 ".\objects\thread_1.o"
-".\objects\pwmouter.o"
 "C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Lib\ARM\arm_cortexM7lfdp_math.lib"
 "C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\RTOS2\RTX\Library\ARM\RTX_CM4F.lib"
 ".\objects\rtx_lib.o"
